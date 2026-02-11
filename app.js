@@ -4,6 +4,9 @@ const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 const rangeButtons = document.querySelectorAll(".range-button");
 const themeToggle = document.getElementById("theme-toggle");
+const tabButtons = document.querySelectorAll(".tab-button");
+const tabPanels = document.querySelectorAll(".tab-panel");
+const newsListEl = document.getElementById("news-list");
 
 const rangeDays = {
   "1d": 1,
@@ -12,6 +15,19 @@ const rangeDays = {
   "1y": 365,
   all: Number.POSITIVE_INFINITY,
 };
+
+const earningsEvents = [
+  { ticker: "AAPL", company: "Apple", date: "2026-02-26", time: "After market close" },
+  { ticker: "MSFT", company: "Microsoft", date: "2026-04-23", time: "After market close" },
+  { ticker: "GOOGL", company: "Alphabet", date: "2026-02-11", time: "After market close" },
+  { ticker: "AMZN", company: "Amazon", date: "2026-02-13", time: "After market close" },
+  { ticker: "META", company: "Meta Platforms", date: "2026-04-24", time: "After market close" },
+  { ticker: "NVDA", company: "NVIDIA", date: "2026-02-20", time: "After market close" },
+  { ticker: "TSLA", company: "Tesla", date: "2026-04-17", time: "After market close" },
+  { ticker: "JPM", company: "JPMorgan Chase", date: "2026-04-12", time: "Before market open" },
+  { ticker: "NFLX", company: "Netflix", date: "2026-04-18", time: "After market close" },
+  { ticker: "AMD", company: "AMD", date: "2026-02-05", time: "After market close" },
+];
 
 let selectedRange = "1d";
 let currentTickers = [];
@@ -23,6 +39,13 @@ const asCurrency = (value) =>
     currency: "USD",
     maximumFractionDigits: 2,
   }).format(value);
+
+const formatDate = (isoDate) =>
+  new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${isoDate}T00:00:00`));
 
 const normalizeTicker = (value) => value.trim().toUpperCase();
 
@@ -172,6 +195,28 @@ const renderResults = () => {
   statusEl.textContent = `Showing ${selectedRange.toUpperCase()} performance for ${currentTickers.length} ticker${currentTickers.length > 1 ? "s" : ""}.`;
 };
 
+const renderNews = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const sorted = [...earningsEvents].sort((a, b) => a.date.localeCompare(b.date));
+  const upcoming = sorted.filter((event) => new Date(`${event.date}T00:00:00`) >= today);
+  const list = upcoming.length ? upcoming : sorted;
+
+  newsListEl.innerHTML = list
+    .map(
+      (event) => `
+      <article class="news-card">
+        <h3>${event.ticker}</h3>
+        <p class="news-company">${event.company}</p>
+        <p class="news-date">${formatDate(event.date)}</p>
+        <p class="news-time">${event.time}</p>
+      </article>
+    `
+    )
+    .join("");
+};
+
 const setLoading = (loading) => {
   if (loading) {
     statusEl.textContent = "Loading stock data...";
@@ -198,6 +243,16 @@ const initTheme = () => {
 
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   applyTheme(prefersDark ? "dark" : "light");
+};
+
+const setActiveTab = (tabName) => {
+  tabButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.tab === tabName);
+  });
+
+  tabPanels.forEach((panel) => {
+    panel.classList.toggle("active", panel.id === `${tabName}-tab`);
+  });
 };
 
 form.addEventListener("submit", async (event) => {
@@ -241,9 +296,17 @@ rangeButtons.forEach((button) => {
   });
 });
 
+tabButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setActiveTab(button.dataset.tab);
+  });
+});
+
 themeToggle.addEventListener("click", () => {
   const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
   applyTheme(currentTheme === "dark" ? "light" : "dark");
 });
 
 initTheme();
+renderNews();
+setActiveTab("tracker");

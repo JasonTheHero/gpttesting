@@ -16,32 +16,47 @@
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙 Dark</button>
       </header>
 
-      <form id="ticker-form" class="ticker-form">
-        <label for="ticker-input">Tickers (comma separated, up to 5)</label>
-        <div class="ticker-controls">
-          <input
-            id="ticker-input"
-            name="ticker"
-            type="text"
-            placeholder="AAPL, MSFT, GOOGL"
-            maxlength="60"
-            required
-          />
-          <button type="submit">Track</button>
-        </div>
-      </form>
-
-      <section class="range-picker" aria-label="Time range selector">
-        <button type="button" class="range-button active" data-range="1d">1 Day</button>
-        <button type="button" class="range-button" data-range="1w">1 Week</button>
-        <button type="button" class="range-button" data-range="1m">1 Month</button>
-        <button type="button" class="range-button" data-range="1y">1 Year</button>
-        <button type="button" class="range-button" data-range="all">Lifetime</button>
+      <section class="tab-nav" aria-label="Main sections">
+        <button type="button" class="tab-button active" data-tab="tracker">Tracker</button>
+        <button type="button" class="tab-button" data-tab="news">News</button>
       </section>
 
-      <section class="result-panel" aria-live="polite">
-        <p id="status" class="status">Enter up to 5 tickers to begin.</p>
-        <div id="results" class="results-grid"></div>
+      <section id="tracker-tab" class="tab-panel active" aria-label="Tracker tab">
+        <form id="ticker-form" class="ticker-form">
+          <label for="ticker-input">Tickers (comma separated, up to 5)</label>
+          <div class="ticker-controls">
+            <input
+              id="ticker-input"
+              name="ticker"
+              type="text"
+              placeholder="AAPL, MSFT, GOOGL"
+              maxlength="60"
+              required
+            />
+            <button type="submit">Track</button>
+          </div>
+        </form>
+
+        <section class="range-picker" aria-label="Time range selector">
+          <button type="button" class="range-button active" data-range="1d">1 Day</button>
+          <button type="button" class="range-button" data-range="1w">1 Week</button>
+          <button type="button" class="range-button" data-range="1m">1 Month</button>
+          <button type="button" class="range-button" data-range="1y">1 Year</button>
+          <button type="button" class="range-button" data-range="all">Lifetime</button>
+        </section>
+
+        <section class="result-panel" aria-live="polite">
+          <p id="status" class="status">Enter up to 5 tickers to begin.</p>
+          <div id="results" class="results-grid"></div>
+        </section>
+      </section>
+
+      <section id="news-tab" class="tab-panel" aria-label="News tab">
+        <div class="news-header">
+          <h2>Upcoming Earnings Calls</h2>
+          <p class="status">Notable companies with the next scheduled calls.</p>
+        </div>
+        <div id="news-list" class="news-list"></div>
       </section>
     </main>
 
